@@ -9,6 +9,7 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 let usuarios = []
+
 // endpoint principal
 app.get('/', (req, res) => {
   res.send('<h1>WebSocket para projecto de IoE</h1>');
@@ -22,24 +23,23 @@ app.get('/usuarios',(req, res)=>{
 //  WebSocket
 io.on('connection', socket => {
   console.log('connection')
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
-  });
+  console.log(socket.id)
 
   socket.on('privado', (msg, to)=>{
     io.to(to).emit('privado', msg)
     console.log(`${msg} - ${to}`)
   })
 
-  socket.on('usuarios', (user)=> {
-    usuarios.push({
-      'socket_id':socket.id,
-    })
-    io.emit('usuarios', usuarios)
-   })
+  socket.on('success', (msg) => {
+    console.log(msg)
+  })
 
-  socket.on('update', () => {
-    io.emit();
+  socket.on('user_client', (nameClient) => {
+    usuarios.push({
+      name: nameClient,
+      socketId: socket.id
+    })
+    console.log(usuarios)
   })
 
   socket.on('disconnect', () => {
